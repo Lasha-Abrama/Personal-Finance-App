@@ -5,6 +5,32 @@
   gap: 24px;
   align-items: start;
 }
+
+.budgets-grid .donut {
+  width: 260px;
+  height: 260px;
+}
+
+.budgets-grid .donut::before {
+  inset: 12%;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.budgets-grid .donut__hole {
+  inset: 18%;
+  padding: 22px;
+}
+
+.budgets-grid .donut__value {
+  font-size: 38px;
+  line-height: 1.05;
+}
+
+.budgets-grid .donut__limit {
+  font-size: 14px;
+  margin-top: 10px;
+}
+
 .summary-row {
   display: flex;
   align-items: center;
@@ -182,4 +208,5 @@
   color: var(--grey-500);
   margin-top: 2px;
 }
+
 

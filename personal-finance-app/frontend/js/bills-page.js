@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
+﻿document.addEventListener('DOMContentLoaded', function () {
   var state = { sort: 'latest', search: '' };
   var billsBody = document.getElementById('bills-body');
 
@@ -7,11 +7,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function load() {
     var q = '?sort=' + state.sort;
-    if (state.search) q += '&search=' + encodeURIComponent(state.search);
 
     apiGet('/bills' + q).then(function (bills) {
       if (!bills) return;
       var html = '';
+      var searchTerm = state.search.trim().toLowerCase();
+      if (searchTerm) {
+        bills = bills.filter(function (bill) {
+          return bill.name.toLowerCase().startsWith(searchTerm);
+        });
+      }
+
       bills.forEach(function (b) {
         var statusClass = b.status === 'paid' ? ' bill-due--paid' : (b.status === 'dueSoon' ? ' bill-due--soon' : '');
         var icon = b.status === 'paid' ? paidCheck : (b.status === 'dueSoon' ? dueIcon : '');
@@ -61,3 +67,4 @@ document.addEventListener('DOMContentLoaded', function () {
     btn.addEventListener('click', function (e) { e.preventDefault(); logout(); });
   });
 });
+

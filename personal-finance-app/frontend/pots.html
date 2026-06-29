@@ -81,7 +81,7 @@
     <label>Target</label>
     <div class="money-input"><span class="dollar">$</span><input class="input" name="pot-target" placeholder="e.g. 2000"></div>
     <label>Theme</label>
-    <select name="pot-theme"><option>Green</option><option>Cyan</option><option>Yellow</option><option>Navy</option><option>Red</option><option>Purple</option></select>
+    <select name="pot-theme"><option>Green</option><option>Cyan</option><option>Yellow</option><option>Navy</option><option>Red</option><option>Purple</option><option>Turquoise</option><option>Brown</option><option>Magenta</option><option>Blue</option><option>Army Green</option><option>Gold</option><option>Orange</option></select>
     <button class="btn btn--dark btn--block" id="btn-add-pot" data-close style="margin-top:8px">Add Pot</button>
   </div>
 </div>
@@ -91,15 +91,14 @@
     <div class="modal__head"><h2>Edit Pot</h2><button class="modal__close" data-close><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg></button></div>
     <p class="modal__desc">If your saving targets change, feel free to update your pots.</p>
     <label>Pot Name</label>
-    <input class="input" value="Savings">
+    <input class="input" name="pot-name" placeholder="e.g. Rainy Days">
     <label>Target</label>
-    <div class="money-input"><span class="dollar">$</span><input class="input" value="2000"></div>
+    <div class="money-input"><span class="dollar">$</span><input class="input" name="pot-target" placeholder="e.g. 2000"></div>
     <label>Theme</label>
-    <select><option>Green</option><option>Cyan</option><option>Yellow</option><option>Navy</option></select>
-    <button class="btn btn--dark btn--block" data-close style="margin-top:8px">Save Changes</button>
+    <select name="pot-theme"><option>Green</option><option>Cyan</option><option>Yellow</option><option>Navy</option><option>Red</option><option>Purple</option><option>Turquoise</option><option>Brown</option><option>Magenta</option><option>Blue</option><option>Army Green</option><option>Gold</option><option>Orange</option></select>
+    <button class="btn btn--dark btn--block" id="btn-edit-pot" data-close style="margin-top:8px">Save Changes</button>
   </div>
 </div>
-
 <div class="modal-overlay" id="modal-add-money" data-overlay data-mode="add">
   <div class="modal">
     <div class="modal__head"><h2 data-money-title>Add to 'Savings'</h2><button class="modal__close" data-close><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg></button></div>
@@ -140,5 +139,4 @@
 <script src="js/pots-page.js"></script>
 </body>
 </html>
-
 

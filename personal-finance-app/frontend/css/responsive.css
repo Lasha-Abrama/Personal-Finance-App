@@ -121,7 +121,6 @@
   .table-row .cell--amt .tx-date {
     display: block;
   }
-
   /* bills -> stacked */
   .bills-head {
     display: none;
@@ -142,9 +141,6 @@
     grid-area: amt;
     align-self: center;
   }
-
-  .auth__promo {
-    display: none;
-  }
 }
+
 

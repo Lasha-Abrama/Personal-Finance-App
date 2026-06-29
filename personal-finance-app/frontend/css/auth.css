@@ -156,4 +156,56 @@
   margin-top: 8px;
   min-height: 18px;
 }
+@media (max-width: 699px) {
+  .auth {
+    align-items: flex-start;
+    padding: 118px 16px 40px;
+  }
+
+  .auth__wrap {
+    flex-direction: column;
+    gap: 0;
+    max-width: none;
+  }
+
+  .auth__promo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 60;
+    display: flex;
+    width: 100%;
+    height: auto;
+    flex: none;
+    margin: 0;
+    padding: 24px 16px;
+    align-items: center;
+    justify-content: center;
+    background: var(--grey-900);
+    background-image: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .auth__promo .logo {
+    font-size: 36px;
+    line-height: 22px;
+    height: 22px;
+    letter-spacing: -2px;
+    display: flex;
+    align-items: center;
+  }
+
+  .auth__promo h2,
+  .auth__promo p {
+    display: none;
+  }
+
+  .auth__form {
+    width: 100%;
+    max-width: 560px;
+    padding: 32px 24px;
+  }
+}
+
 
