@@ -5,7 +5,7 @@ const getBudgets = async (req, res) => {
     const budgets = await budgetService.getBudgets(req.userId);
     res.json(budgets);
   } catch (err) {
-    res.status(500).json({ message: "სერვერის შეცდომა" });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -16,7 +16,7 @@ const createBudget = async (req, res) => {
     if (!category || !maximum || !theme) {
       return res
         .status(400)
-        .json({ message: "სავალდებულო ველები: category, maximum, theme" });
+        .json({ message: "Required fields: category, maximum, theme" });
     }
 
     const budget = await budgetService.createBudget({
@@ -28,7 +28,7 @@ const createBudget = async (req, res) => {
 
     res.status(201).json(budget);
   } catch (err) {
-    res.status(500).json({ message: "სერვერის შეცდომა" });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -45,12 +45,12 @@ const updateBudget = async (req, res) => {
     });
 
     if (!budget) {
-      return res.status(404).json({ message: "ბიუჯეტი ვერ მოიძებნა" });
+      return res.status(404).json({ message: "Budget not found" });
     }
 
     res.json(budget);
   } catch (err) {
-    res.status(500).json({ message: "სერვერის შეცდომა" });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -62,12 +62,12 @@ const deleteBudget = async (req, res) => {
     });
 
     if (!budget) {
-      return res.status(404).json({ message: "ბიუჯეტი ვერ მოიძებნა" });
+      return res.status(404).json({ message: "Budget not found" });
     }
 
-    res.json({ message: "ბიუჯეტი წაშლილია" });
+    res.json({ message: "Budget deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: "სერვერის შეცდომა" });
+    res.status(500).json({ message: "Server error" });
   }
 };
 

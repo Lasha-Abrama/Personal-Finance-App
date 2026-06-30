@@ -5,7 +5,7 @@ const getBillsSummary = async (req, res) => {
     const summary = await billService.getBillsSummary(req.userId);
     res.json(summary);
   } catch (err) {
-    res.status(500).json({ message: "სერვერის შეცდომა" });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -19,7 +19,7 @@ const getBills = async (req, res) => {
 
     res.json(bills);
   } catch (err) {
-    res.status(500).json({ message: "სერვერის შეცდომა" });
+    res.status(500).json({ message: "Server error" });
   }
 };
 

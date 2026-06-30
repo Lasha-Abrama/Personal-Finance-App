@@ -7,9 +7,9 @@ dns.setDefaultResultOrder('ipv4first');
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URL);
-    console.log('MongoDB დაკავშირებულია');
+    console.log('Connected to MongoDB');
   } catch (err) {
-    console.error('MongoDB შეცდომა:', err.message);
+    console.error('MongoDB error:', err.message);
     process.exit(1);
   }
 };
