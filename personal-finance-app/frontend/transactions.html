@@ -239,7 +239,7 @@
             </svg>
           </button>
         </div>
-        <p class="modal__desc">
+        <p class="modal__desc" id="send-money-description">
           Enter the receiver’s account email. The transfer will appear
           immediately for both users.
         </p>
@@ -250,16 +250,35 @@
         </div>
 
         <form id="send-money-form">
-          <label for="receiver-email">Receiver email</label>
-          <input
-            class="input"
-            id="receiver-email"
-            name="receiverEmail"
-            type="email"
-            placeholder="name@example.com"
-            autocomplete="email"
-            required
-          />
+          <label for="transaction-type">Payment type</label>
+          <select id="transaction-type" name="transactionType">
+            <option value="user">App user</option>
+            <option value="merchant">Shop or service</option>
+          </select>
+
+          <div id="receiver-email-wrap">
+            <label for="receiver-email">Receiver email</label>
+            <input
+              class="input"
+              id="receiver-email"
+              name="receiverEmail"
+              type="email"
+              placeholder="name@example.com"
+              autocomplete="email"
+              required
+            />
+          </div>
+
+          <div id="merchant-name-wrap" hidden>
+            <label for="merchant-name">Shop or service name</label>
+            <input
+              class="input"
+              id="merchant-name"
+              name="counterpartyName"
+              maxlength="100"
+              placeholder="e.g. Lotus Spa"
+            />
+          </div>
 
           <label for="transaction-amount">Amount</label>
           <div class="money-input">

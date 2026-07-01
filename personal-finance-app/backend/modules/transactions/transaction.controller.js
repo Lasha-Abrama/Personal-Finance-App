@@ -22,7 +22,7 @@ const createTransaction = async (req, res) => {
 
     if (result === "MISSING_FIELDS") {
       return res.status(400).json({
-        message: "Required fields: receiverEmail, category, amount, color",
+        message: "Complete all required transaction fields",
       });
     }
 

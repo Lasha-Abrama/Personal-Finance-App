@@ -186,6 +186,12 @@
   color: var(--grey-500);
   margin-top: 2px;
 }
+.budget-chart .donut::before {
+  inset: 12%;
+}
+.budget-chart .donut__hole {
+  inset: 18%;
+}
 .donut-data {
   background: conic-gradient(
     var(--green) 0 5.13%,

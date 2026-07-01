@@ -5,6 +5,9 @@ document.addEventListener("DOMContentLoaded", function () {
   var sendForm = document.getElementById("send-money-form");
   var sendModal = document.getElementById("modal-send-money");
   var sendError = document.getElementById("send-money-error");
+  var transactionTypeSelect = document.getElementById("transaction-type");
+  var receiverEmailWrap = document.getElementById("receiver-email-wrap");
+  var merchantNameWrap = document.getElementById("merchant-name-wrap");
   var categorySelect = document.getElementById("transaction-category");
   var customCategoryWrap = document.getElementById("custom-category-wrap");
   var currentBalance = 0;
@@ -14,6 +17,17 @@ document.addEventListener("DOMContentLoaded", function () {
       currentBalance = Number(user.balance) || 0;
       document.getElementById("modal-tx-balance").textContent = fmt(currentBalance);
     });
+  }
+
+  function updatePaymentType() {
+    var isMerchant = transactionTypeSelect.value === "merchant";
+    receiverEmailWrap.hidden = isMerchant;
+    merchantNameWrap.hidden = !isMerchant;
+    sendForm.elements.receiverEmail.required = !isMerchant;
+    sendForm.elements.counterpartyName.required = isMerchant;
+    document.getElementById("send-money-description").textContent = isMerchant
+      ? "Enter the shop or service name. This payment will be recorded as spending from your account."
+      : "Enter the receiver’s account email. The transfer will appear immediately for both users.";
   }
 
   function load() {
@@ -106,6 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  updatePaymentType();
   load();
   loadBalance();
 
@@ -122,11 +137,17 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("custom-transaction-category").required = isCustom;
   });
 
+  transactionTypeSelect.addEventListener("change", updatePaymentType);
+
   sendForm.addEventListener("submit", function (e) {
     e.preventDefault();
     sendError.textContent = "";
 
+    var transactionType = transactionTypeSelect.value;
     var receiverEmail = sendForm.elements.receiverEmail.value.trim().toLowerCase();
+    var counterpartyName = sendForm.elements.counterpartyName.value
+      .trim()
+      .replace(/\s+/g, " ");
     var amount = Number(sendForm.elements.amount.value);
     var category =
       categorySelect.value === "custom"
@@ -137,6 +158,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!category) {
       sendError.textContent = "Enter a category.";
+      return;
+    }
+
+    if (transactionType === "merchant" && !counterpartyName) {
+      sendError.textContent = "Enter the shop or service name.";
       return;
     }
 
@@ -154,14 +180,22 @@ document.addEventListener("DOMContentLoaded", function () {
     submitButton.disabled = true;
     submitButton.textContent = "Sending...";
 
-    apiPost("/transactions", {
-      receiverEmail: receiverEmail,
+    var transactionData = {
+      transactionType: transactionType,
       amount: amount,
       category: category,
       color: color,
-    })
+    };
+    if (transactionType === "merchant") {
+      transactionData.counterpartyName = counterpartyName;
+    } else {
+      transactionData.receiverEmail = receiverEmail;
+    }
+
+    apiPost("/transactions", transactionData)
       .then(function () {
         sendForm.reset();
+        updatePaymentType();
         customCategoryWrap.hidden = true;
         sendModal.classList.remove("is-open");
         state.page = 1;

@@ -1,6 +1,14 @@
 const Transaction = require("./transaction.model");
 const User = require("../auth/auth.model");
 
+const initials = (name) =>
+  name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("");
+
 const transactionTimestamp = (transaction) => {
   const date = new Date(transaction.date);
   if (Number.isFinite(date.getTime())) {
@@ -22,11 +30,20 @@ const formatTransaction = (transaction, currentUserId) => {
   const senderId = item.senderId && (item.senderId._id || item.senderId);
   const isSender = senderId && senderId.toString() === currentUserId;
   const otherUser = isSender ? item.receiverId : item.senderId;
+  const isMerchant = item.transactionType === "merchant";
 
   return {
     ...item,
-    name: otherUser && otherUser.name ? otherUser.name : "Unknown user",
-    avatar: otherUser && otherUser.avatar ? otherUser.avatar : "",
+    name: isMerchant
+      ? item.counterpartyName
+      : otherUser && otherUser.name
+        ? otherUser.name
+        : "Unknown user",
+    avatar: isMerchant
+      ? initials(item.counterpartyName || "?")
+      : otherUser && otherUser.avatar
+        ? otherUser.avatar
+        : "",
     type: isSender ? "sent" : "received",
     displayAmount: isSender ? -item.amount : item.amount,
     date: hasRecordedDate
@@ -129,24 +146,36 @@ exports.getTransactions = async ({ userId, query }) => {
 
 exports.createTransaction = async ({
   senderId,
+  transactionType,
   receiverEmail,
+  counterpartyName,
   category,
   amount,
   color,
 }) => {
-  if (!receiverEmail || !category || amount === undefined || !color) {
+  if (
+    !transactionType ||
+    !category ||
+    amount === undefined ||
+    !color ||
+    (transactionType === "user" && !receiverEmail) ||
+    (transactionType === "merchant" && !counterpartyName)
+  ) {
     return "MISSING_FIELDS";
   }
 
-  const receiver = await User.findOne({
-    email: receiverEmail.trim().toLowerCase(),
-  });
-  if (!receiver) {
-    return "RECEIVER_NOT_FOUND";
-  }
+  let receiver = null;
+  if (transactionType === "user") {
+    receiver = await User.findOne({
+      email: receiverEmail.trim().toLowerCase(),
+    });
+    if (!receiver) {
+      return "RECEIVER_NOT_FOUND";
+    }
 
-  if (receiver._id.toString() === senderId.toString()) {
-    return "SELF_TRANSFER";
+    if (receiver._id.toString() === senderId.toString()) {
+      return "SELF_TRANSFER";
+    }
   }
 
   const numericAmount = Number(amount);
@@ -157,7 +186,7 @@ exports.createTransaction = async ({
   const sender = await User.findOneAndUpdate(
     { _id: senderId, balance: { $gte: numericAmount } },
     { $inc: { balance: -numericAmount } },
-    { new: true },
+    { returnDocument: "after" },
   );
 
   if (!sender) {
@@ -165,21 +194,28 @@ exports.createTransaction = async ({
     return senderExists ? "INSUFFICIENT_BALANCE" : "SENDER_NOT_FOUND";
   }
 
-  const updatedReceiver = await User.findByIdAndUpdate(
-    receiver._id,
-    { $inc: { balance: numericAmount } },
-    { new: true },
-  );
+  if (transactionType === "user") {
+    const updatedReceiver = await User.findByIdAndUpdate(
+      receiver._id,
+      { $inc: { balance: numericAmount } },
+      { returnDocument: "after" },
+    );
 
-  if (!updatedReceiver) {
-    await User.findByIdAndUpdate(senderId, { $inc: { balance: numericAmount } });
-    return "RECEIVER_NOT_FOUND";
+    if (!updatedReceiver) {
+      await User.findByIdAndUpdate(senderId, {
+        $inc: { balance: numericAmount },
+      });
+      return "RECEIVER_NOT_FOUND";
+    }
   }
 
   try {
     const transaction = await Transaction.create({
       senderId,
-      receiverId: receiver._id,
+      receiverId: receiver ? receiver._id : undefined,
+      transactionType,
+      counterpartyName:
+        transactionType === "merchant" ? counterpartyName : undefined,
       category,
       amount: numericAmount,
       color,
@@ -190,7 +226,11 @@ exports.createTransaction = async ({
       .populate("receiverId", "name avatar balance");
   } catch (err) {
     await User.findByIdAndUpdate(senderId, { $inc: { balance: numericAmount } });
-    await User.findByIdAndUpdate(receiver._id, { $inc: { balance: -numericAmount } });
+    if (receiver) {
+      await User.findByIdAndUpdate(receiver._id, {
+        $inc: { balance: -numericAmount },
+      });
+    }
     throw err;
   }
 };
